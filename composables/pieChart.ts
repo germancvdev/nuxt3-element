@@ -4,11 +4,13 @@ import * as percent from '@amcharts/amcharts5/percent'
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated'
 
 import am5themes_dark from '@amcharts/amcharts5/themes/Dark'
-import am5themes_material from '@amcharts/amcharts5/themes/Material'
+import am5themes_material from '@amcharts/amcharts5/themes/Spirited'
 import am5themes_responsive from '@amcharts/amcharts5/themes/Responsive'
 
-export const usePieChart = (el: string, data: []) => {
+export const usePieChart = () => {
   let root: am5.Root = null
+  const el = ref('')
+  const data = ref([])
 
   const colorMode = useColorMode()
 
@@ -18,7 +20,10 @@ export const usePieChart = (el: string, data: []) => {
   })
 
   function dispose() {
-    if (root) root.dispose()
+    if (root) {
+      root.dispose()
+      root = null
+    }
   }
 
   onUnmounted(() => {
@@ -36,7 +41,11 @@ export const usePieChart = (el: string, data: []) => {
   }
 
   function drawing() {
-    root = am5.Root.new(el)
+    console.log(root)
+
+    if (!root) {
+      root = am5.Root.new(el.value)
+    }
     changeTheme()
 
     let chart = root.container.children.push(
@@ -63,14 +72,14 @@ export const usePieChart = (el: string, data: []) => {
       endAngle: -90,
     })
 
-    series.data.setAll(data)
+    series.data.setAll(data.value)
 
     series.appear(1000, 100)
   }
   return {
     drawing,
-    changeTheme,
-    dispose,
+    el,
     data,
+    dispose,
   }
 }

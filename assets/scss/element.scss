@@ -9,3 +9,7 @@
 );
 
 @use 'element-plus/theme-chalk/src/index.scss' as *;
+
+.el-drawer__body {
+  padding: 0 !important;
+}

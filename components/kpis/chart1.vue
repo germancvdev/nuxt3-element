@@ -1,46 +1,52 @@
-<template>
-  <el-card class="!border-none !shadow-sm">
-    <div ref="chart1" class="h-96 w-full"></div>
-  </el-card>
-</template>
-
 <script setup>
 const chart1 = ref()
-const data = [
-  {
-    category: 'Lithuania',
-    value: 501.9,
-  },
-  {
-    category: 'Czechia',
-    value: 301.9,
-  },
-  {
-    category: 'Ireland',
-    value: 201.1,
-  },
-  {
-    category: 'Germany',
-    value: 165.8,
-  },
-  {
-    category: 'Australia',
-    value: 139.9,
-  },
-  {
-    category: 'Austria',
-    value: 128.3,
-  },
-  {
-    category: 'UK',
-    value: 99,
-  },
-]
+const { $api } = useNuxtApp()
 
-onMounted(() => {
-  const { drawing } = usePieChart(chart1.value, data)
-  drawing()
+const {
+  pending,
+  data: items,
+  refresh,
+  error,
+} = useLazyAsyncData('kpisChart', () => $api('/charts-categories/'), {
+  initialCache: false,
+  server: false,
 })
+
+const { data, el, drawing, dispose } = usePieChart()
+
+watch(items, (v) => {
+  if (!v) return
+  data.value = items.value
+  el.value = chart1.value
+  loadData(drawing, dispose)
+})
+
+function loadData(drawing, dispose) {
+  dispose()
+  drawing()
+}
 </script>
 
-<style lang="scss" scoped></style>
+<template>
+  <div class="h-full w-full">
+    <div v-if="error">
+      {{ error.message }}
+    </div>
+
+    <el-skeleton
+      v-if="pending"
+      animated
+      style="width: 100%; height: 100%"
+      class="!rounded-md"
+    >
+      <template #template>
+        <el-skeleton-item
+          class="!rounded-md"
+          variant="image"
+          style="width: 100%; height: 100%"
+        />
+      </template>
+    </el-skeleton>
+    <div ref="chart1" class="w-full h-full"></div>
+  </div>
+</template>

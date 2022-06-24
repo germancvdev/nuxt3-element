@@ -95,6 +95,11 @@ import {
   Search,
   Star,
 } from '@element-plus/icons-vue'
+const { $api } = useNuxtApp()
+
+useLazyAsyncData('indexPage', async () => {
+  await $api('/charts-bounds')
+})
 </script>
 
 <style lang="scss" scoped></style>
