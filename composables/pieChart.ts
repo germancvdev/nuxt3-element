@@ -41,11 +41,11 @@ export const usePieChart = () => {
   }
 
   function drawing() {
-    console.log(root)
-
+    if (!el.value) return
     if (!root) {
       root = am5.Root.new(el.value)
     }
+
     changeTheme()
 
     let chart = root.container.children.push(
